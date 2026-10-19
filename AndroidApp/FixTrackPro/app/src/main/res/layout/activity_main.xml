@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- App Logo / Icon -->
+        <ImageView
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_marginBottom="24dp"
+            android:contentDescription="FixTrack Pro Logo"
+            android:src="@mipmap/ic_launcher" />
+
+        <!-- App Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="FixTrack Pro"
+            android:textColor="#212121"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <!-- Tagline / Description -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="48dp"
+            android:text="Empowering communities to report, track, and resolve service delivery issues together."
+            android:textAlignment="center"
+            android:textColor="#666666"
+            android:textSize="14sp" />
+
+        <!-- Sign In Button -->
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#212121"
+            android:text="Sign In"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <!-- Register Button -->
+        <Button
+            android:id="@+id/btnRegister"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="16dp"
+            android:text="Create Account"
+            android:textStyle="bold" />
+
+        <!-- Continue as Guest Button -->
+        <Button
+            android:id="@+id/btnGuest"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Continue as Guest"
+            android:textColor="#212121" />
+
+        <Button
+            android:id="@+id/btnViewPrizes"
+            style="@style/FancyButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:text="View Prizes &amp; Raffles" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FixTrack Pro - Campus Issue & Rewards Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#090d16',
+                        cardBg: '#111827',
+                        accentBlue: '#3b82f6',
+                        accentPurple: '#8b5cf6',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-darkBg text-gray-100 min-h-screen font-sans selection:bg-blue-500 selection:text-white flex flex-col">
+
+    <!-- GLOBAL TOP NAVBAR -->
+    <header class="bg-cardBg/90 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="showHome()">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center font-bold text-lg shadow-md text-white">FT</div>
+            <div>
+                <h2 class="font-bold text-lg leading-tight text-white">FixTrack Pro</h2>
+                <span id="userRoleBadge" class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-medium">Campus Portal</span>
+            </div>
+        </div>
+        
+        <!-- Public Menu (Shown when logged out) -->
+        <div id="publicNav" class="flex items-center space-x-3">
+            <button onclick="showHome()" class="text-sm font-semibold text-gray-300 hover:text-white px-3 py-2 transition">Home</button>
+            <button onclick="openAuth('login')" class="bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 px-4 py-2 rounded-xl text-sm font-semibold transition">Sign In</button>
+            <button onclick="openAuth('register')" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg shadow-blue-600/20 transition">Register</button>
+        </div>
+
+        <!-- Authenticated Menu (Shown when logged in) -->
+        <div id="userNav" class="hidden items-center space-x-4">
+            <div class="text-right hidden sm:block">
+                <p id="welcomeUserText" class="text-sm font-semibold text-gray-200">Welcome, User</p>
+                <p class="text-xs text-gray-400">Active Session</p>
+            </div>
+            <button onclick="handleLogout()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-sm font-semibold transition">Sign Out</button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINERS -->
+    <div class="flex-1 max-w-7xl w-full mx-auto p-6">
+
+        <!-- 1. HOMEPAGE / LANDING VIEW -->
+        <section id="homeSection" class="space-y-12 py-6">
+            <!-- Hero Banner -->
+            <div class="relative bg-cardBg/80 border border-gray-800 p-8 sm:p-12 rounded-3xl overflow-hidden shadow-2xl">
+                <div class="absolute -top-32 -right-32 w-80 h-80 bg-blue-600/20 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-purple-600/20 rounded-full blur-3xl"></div>
+
+                <div class="max-w-2xl relative z-10 space-y-6">
+                    <span class="text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">Next-Gen Maintenance Tracking</span>
+                    <h1 class="text-4xl sm:text-5xl font-black leading-tight bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
+                        Report Campus Issues & Earn Exclusive Rewards.
+                    </h1>
+                    <p class="text-gray-400 text-base sm:text-lg">
+                        FixTrack Pro connects students and campus facility admins. Submit maintenance reports for Wi-Fi, hardware, or campus facilities and automatically earn entries into our prize draws!
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button onclick="openAuth('register')" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-blue-600/30 transition">Get Started Now</button>
+                        <button onclick="openAuth('login')" class="bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 font-semibold px-6 py-3.5 rounded-xl transition">Sign In to Account</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-lg flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-xl">⚡</div>
+                    <div>
+                        <h4 class="text-2xl font-black text-white" id="homeTotalCount">3+</h4>
+                        <p class="text-xs text-gray-400">Issues Resolved Promptly</p>
+                    </div>
+                </div>
+                <div class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-lg flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-xl">🎟️</div>
+                    <div>
+                        <h4 class="text-2xl font-black text-white">100%</h4>
+                        <p class="text-xs text-gray-400">Raffle Ticket Reward Rate</p>
+                    </div>
+                </div>
+                <div class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-lg flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-xl">🎓</div>
+                    <div>
+                        <h4 class="text-2xl font-black text-white">Student First</h4>
+                        <p class="text-xs text-gray-400">Built for Campus Mobility</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Cards -->
+            <div>
+                <h3 class="text-2xl font-bold text-white mb-6">How FixTrack Works</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div class="bg-cardBg/60 border border-gray-800 p-6 rounded-2xl space-y-3">
+                        <div class="text-blue-400 font-black text-lg">01.</div>
+                        <h4 class="font-bold text-white">Submit an Issue</h4>
+                        <p class="text-xs text-gray-400 leading-relaxed">Spotted broken hardware, faulty Wi-Fi, or facility problems? Report it directly from your phone or browser.</p>
+                    </div>
+                    <div class="bg-cardBg/60 border border-gray-800 p-6 rounded-2xl space-y-3">
+                        <div class="text-purple-400 font-black text-lg">02.</div>
+                        <h4 class="font-bold text-white">Earn Raffle Entries</h4>
+                        <p class="text-xs text-gray-400 leading-relaxed">Every validated report automatically grants you a unique raffle ticket code for ongoing campus giveaways.</p>
+                    </div>
+                    <div class="bg-cardBg/60 border border-gray-800 p-6 rounded-2xl space-y-3">
+                        <div class="text-emerald-400 font-black text-lg">03.</div>
+                        <h4 class="font-bold text-white">Track Resolution</h4>
+                        <p class="text-xs text-gray-400 leading-relaxed">Watch real-time status updates as campus admin technicians address and resolve your submitted tickets.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. AUTHENTICATION SECTION (Login & Register Modal/View) -->
+        <section id="authSection" class="hidden my-12 flex justify-center">
+            <div class="w-full max-w-md bg-cardBg/90 backdrop-blur-xl border border-gray-800 p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">FixTrack Account</h2>
+                    <p class="text-gray-400 text-sm mt-1">Sign in or create a student profile</p>
+                </div>
+
+                <!-- Auth Tabs -->
+                <div class="flex border-b border-gray-800 mb-6">
+                    <button onclick="switchAuthTab('login')" id="loginTabBtn" class="flex-1 pb-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 transition">Sign In</button>
+                    <button onclick="switchAuthTab('register')" id="registerTabBtn" class="flex-1 pb-3 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-200 transition">Create Account</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Email Address</label>
+                        <input type="email" id="loginEmail" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 text-gray-200" placeholder="student@capeit.co.za">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Password</label>
+                        <input type="password" id="loginPassword" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 text-gray-200" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-blue-600/30 transition">Sign In</button>
+                    <div class="pt-2 text-center text-xs text-gray-500">
+                        <p>Demo Admin: <span class="font-mono text-gray-400">admin@fixtrack.com</span> / <span class="font-mono text-gray-400">admin123</span></p>
+                        <p>Demo Student: <span class="font-mono text-gray-400">guest@fixtrack.com</span> / <span class="font-mono text-gray-400">guest123</span></p>
+                    </div>
+                </form>
+
+                <!-- Register Form -->
+                <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Full Name</label>
+                        <input type="text" id="regName" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 text-gray-200" placeholder="Tristan Booysen">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Email Address</label>
+                        <input type="email" id="regEmail" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 text-gray-200" placeholder="student@capeit.co.za">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Password</label>
+                        <input type="password" id="regPassword" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 text-gray-200" placeholder="••••••••">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Account Type</label>
+                        <div class="w-full bg-gray-900/60 border border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-300 font-semibold flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                            <span>Student / Guest</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-purple-600/30 transition">Create Student Account</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 3. STUDENT / GUEST DASHBOARD -->
+        <section id="guestDashboard" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-gray-400 text-xs font-semibold uppercase tracking-wider">My Active Raffle Tickets</h3>
+                    <p id="guestTicketCount" class="text-3xl font-extrabold text-blue-400 mt-2">1 Active</p>
+                    <p class="text-xs text-gray-500 mt-1">Submit reports to earn additional raffle entries!</p>
+                </div>
+                <div class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-gray-400 text-xs font-semibold uppercase tracking-wider">Community Campus Feed</h3>
+                    <p id="guestReportCount" class="text-3xl font-extrabold text-purple-400 mt-2">3 Reports</p>
+                    <p class="text-xs text-gray-500 mt-1">Live issues tracked on campus</p>
+                </div>
+                <div class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-lg flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-gray-400 text-xs font-semibold uppercase tracking-wider">Quick Action</h3>
+                        <p class="text-sm font-medium text-gray-300 mt-1">Spotted a new problem on campus?</p>
+                    </div>
+                    <button onclick="openReportModal()" class="mt-4 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold py-2.5 px-4 rounded-xl shadow-lg transition">Submit New Report</button>
+                </div>
+            </div>
+
+            <!-- Community Feed Container -->
+            <div class="bg-cardBg border border-gray-800 rounded-2xl p-6 shadow-xl space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold">Live Campus Issue Feed</h3>
+                    <span class="text-xs bg-gray-800 text-gray-400 px-3 py-1 rounded-full">Auto-Syncing</span>
+                </div>
+                <div id="guestFeedList" class="space-y-4">
+                    <!-- Dynamic Feed JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. ADMIN DASHBOARD -->
+        <section id="adminDashboard" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-gray-400 text-xs font-semibold uppercase tracking-wider">Total Reports</h3>
+                    <p id="adminTotalReports" class="text-3xl font-extrabold text-blue-400 mt-2">3</p>
+                </div>
+                <div class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-gray-400 text-xs font-semibold uppercase tracking-wider">Pending Issues</h3>
+                    <p id="adminPendingCount" class="text-3xl font-extrabold text-amber-400 mt-2">1</p>
+                </div>
+                <div class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-gray-400 text-xs font-semibold uppercase tracking-wider">Resolved Issues</h3>
+                    <p id="adminResolvedCount" class="text-3xl font-extrabold text-emerald-400 mt-2">2</p>
+                </div>
+                <div class="bg-cardBg border border-gray-800 p-6 rounded-2xl shadow-lg flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-gray-400 text-xs font-semibold uppercase tracking-wider">Raffle Machine</h3>
+                        <p class="text-sm font-medium text-gray-300 mt-1">Select winner</p>
+                    </div>
+                    <button onclick="triggerRaffleDraw()" class="mt-4 bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold py-2.5 px-4 rounded-xl shadow-lg transition">Draw Winner</button>
+                </div>
+            </div>
+
+            <!-- Admin Table -->
+            <div class="bg-cardBg border border-gray-800 rounded-2xl p-6 shadow-xl overflow-x-auto">
+                <h3 class="text-lg font-bold mb-4">Admin System Reports & Management</h3>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-800 text-xs uppercase text-gray-400">
+                            <th class="pb-3 px-4">ID</th>
+                            <th class="pb-3 px-4">Title & Details</th>
+                            <th class="pb-3 px-4">Category</th>
+                            <th class="pb-3 px-4">Status</th>
+                            <th class="pb-3 px-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody" class="divide-y divide-gray-800 text-sm">
+                        <!-- Dynamic Admin JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- MODAL: Submit Report -->
+    <div id="reportModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-cardBg border border-gray-800 max-w-lg w-full p-6 rounded-2xl shadow-2xl space-y-4">
+            <h3 class="text-xl font-bold">Submit Campus Issue Report</h3>
+            <form onsubmit="handleNewReport(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Issue Title</label>
+                    <input type="text" id="reportTitle" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500" placeholder="e.g. Projector broken in Lab 3">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Category</label>
+                    <select id="reportCategory" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500">
+                        <option value="Hardware">Hardware</option>
+                        <option value="Facilities">Facilities</option>
+                        <option value="Network">Network</option>
+                        <option value="Software">Software</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Description</label>
+                    <textarea id="reportDesc" rows="3" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500" placeholder="Provide problem details..."></textarea>
+                </div>
+                <div class="flex space-x-3 pt-2">
+                    <button type="button" onclick="closeReportModal()" class="flex-1 bg-gray-800 hover:bg-gray-700 py-2.5 rounded-xl font-semibold text-sm transition">Cancel</button>
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-500 py-2.5 rounded-xl font-semibold text-sm transition">Submit & Get Ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Winner Celebration -->
+    <div id="winnerModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="bg-cardBg border border-purple-500/50 max-w-md w-full p-8 rounded-3xl text-center space-y-4 shadow-2xl relative">
+            <h2 class="text-2xl font-black bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">🎉 Raffle Winner Drawn! 🎉</h2>
+            <div id="winnerText" class="text-lg font-medium text-gray-200 leading-relaxed"></div>
+            <button onclick="closeWinnerModal()" class="w-full bg-purple-600 hover:bg-purple-500 py-3 rounded-xl font-semibold transition">Awesome!</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT STATE ENGINE -->
+    <script>
+        // Default Registered Users
+        let userAccounts = JSON.parse(localStorage.getItem('fixtrack_users')) || [
+            { name: "Administrator", email: "admin@fixtrack.com", password: "admin123", role: "admin" },
+            { name: "Tristan Booysen", email: "guest@fixtrack.com", password: "guest123", role: "guest" }
+        ];
+
+        // Default Campus Reports
+        let reports = JSON.parse(localStorage.getItem('fixtrack_reports')) || [
+            { id: 1, title: "Wi-Fi Down in Block B", category: "Network", description: "Cannot connect to student portal.", status: "Pending", user: "Tristan Booysen", ticket: "FIX-10421" },
+            { id: 2, title: "Projector Bulb Faded", category: "Hardware", description: "Lecture room 4 projector is too dim.", status: "In Progress", user: "John Doe", ticket: "FIX-88412" },
+            { id: 3, title: "Door Lock Broken", category: "Facilities", description: "Lab 2 door handle is stuck.", status: "Resolved", user: "Sarah Smith", ticket: "FIX-33921" }
+        ];
+
+        let currentUser = JSON.parse(localStorage.getItem('fixtrack_currentUser')) || null;
+
+        // View Switcher
+        function showHome() {
+            if (currentUser) {
+                renderDashboard();
+            } else {
+                document.getElementById('homeSection').classList.remove('hidden');
+                document.getElementById('authSection').classList.add('hidden');
+                document.getElementById('guestDashboard').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.add('hidden');
+                document.getElementById('publicNav').classList.remove('hidden');
+                document.getElementById('userNav').classList.add('hidden');
+                document.getElementById('homeTotalCount').innerText = `${reports.length}+`;
+            }
+        }
+
+        function openAuth(tab) {
+            document.getElementById('homeSection').classList.add('hidden');
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('guestDashboard').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+            switchAuthTab(tab);
+        }
+
+        function switchAuthTab(tab) {
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('loginTabBtn').className = "flex-1 pb-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 transition";
+                document.getElementById('registerTabBtn').className = "flex-1 pb-3 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-200 transition";
+            } else {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+                document.getElementById('registerTabBtn').className = "flex-1 pb-3 text-sm font-semibold border-b-2 border-purple-500 text-purple-400 transition";
+                document.getElementById('loginTabBtn').className = "flex-1 pb-3 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-200 transition";
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            if (userAccounts.some(u => u.email === email)) {
+                alert("An account with this email already exists!");
+                return;
+            }
+
+            const newUser = { name, email, password, role: "guest" };
+            userAccounts.push(newUser);
+            localStorage.setItem('fixtrack_users', JSON.stringify(userAccounts));
+
+            currentUser = newUser;
+            localStorage.setItem('fixtrack_currentUser', JSON.stringify(currentUser));
+
+            renderDashboard();
+            alert(`Signed up successfully! Welcome, ${name}.`);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const found = userAccounts.find(u => u.email === email && u.password === password);
+
+            if (found) {
+                currentUser = found;
+                localStorage.setItem('fixtrack_currentUser', JSON.stringify(currentUser));
+                renderDashboard();
+            } else {
+                alert("Invalid email or password. Please try again.");
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('fixtrack_currentUser');
+            currentUser = null;
+            showHome();
+        }
+
+        function renderDashboard() {
+            document.getElementById('homeSection').classList.add('hidden');
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('publicNav').classList.add('hidden');
+            document.getElementById('userNav').classList.remove('hidden');
+
+            document.getElementById('welcomeUserText').innerText = `Welcome, ${currentUser.name}`;
+            document.getElementById('userRoleBadge').innerText = currentUser.role === 'admin' ? 'Admin Panel' : 'Student Portal';
+
+            if (currentUser.role === 'admin') {
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                document.getElementById('guestDashboard').classList.add('hidden');
+                renderAdminDashboard();
+            } else {
+                document.getElementById('guestDashboard').classList.remove('hidden');
+                document.getElementById('adminDashboard').classList.add('hidden');
+                renderGuestDashboard();
+            }
+        }
+
+        function renderGuestDashboard() {
+            document.getElementById('guestReportCount').innerText = `${reports.length} Reports`;
+            const myTickets = reports.filter(r => r.user === currentUser.name).length;
+            document.getElementById('guestTicketCount').innerText = `${myTickets > 0 ? myTickets : 1} Active`;
+
+            const feed = document.getElementById('guestFeedList');
+            feed.innerHTML = reports.map(r => `
+                <div class="bg-gray-900/60 border border-gray-800 p-4 rounded-xl flex justify-between items-center">
+                    <div>
+                        <span class="text-xs px-2 py-0.5 rounded font-semibold bg-blue-500/10 text-blue-400">${r.category}</span>
+                        <h4 class="font-bold mt-1 text-white">${r.title}</h4>
+                        <p class="text-xs text-gray-400 mt-0.5">${r.description}</p>
+                        <p class="text-[10px] text-gray-500 mt-1">Submitted by: ${r.user}</p>
+                    </div>
+                    <span class="text-xs px-3 py-1 rounded-full font-semibold ${r.status === 'Resolved' ? 'bg-emerald-500/20 text-emerald-400' : r.status === 'In Progress' ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-500/20 text-blue-400'}">${r.status}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminDashboard() {
+            document.getElementById('adminTotalReports').innerText = reports.length;
+            document.getElementById('adminPendingCount').innerText = reports.filter(r => r.status === 'Pending').length;
+            document.getElementById('adminResolvedCount').innerText = reports.filter(r => r.status === 'Resolved').length;
+
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = reports.map(r => `
+                <tr class="hover:bg-gray-900/40">
+                    <td class="py-3 px-4 font-mono text-xs text-gray-500">#${r.id}</td>
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-white">${r.title}</div>
+                        <div class="text-xs text-gray-400">${r.description}</div>
+                        <div class="text-[10px] text-gray-500">User: ${r.user} | Ticket: ${r.ticket}</div>
+                    </td>
+                    <td class="py-3 px-4"><span class="text-xs bg-gray-800 px-2 py-1 rounded text-gray-300">${r.category}</span></td>
+                    <td class="py-3 px-4 font-semibold text-xs ${r.status === 'Resolved' ? 'text-emerald-400' : r.status === 'In Progress' ? 'text-amber-400' : 'text-blue-400'}">${r.status}</td>
+                    <td class="py-3 px-4 space-x-2">
+                        <button onclick="updateStatus(${r.id}, 'In Progress')" class="text-xs bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-3 py-1 rounded font-semibold">Progress</button>
+                        <button onclick="updateStatus(${r.id}, 'Resolved')" class="text-xs bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 px-3 py-1 rounded font-semibold">Resolve</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStatus(id, newStatus) {
+            reports = reports.map(r => r.id === id ? {...r, status: newStatus} : r);
+            localStorage.setItem('fixtrack_reports', JSON.stringify(reports));
+            renderAdminDashboard();
+        }
+
+        function openReportModal() { 
+            document.getElementById('reportModal').classList.remove('hidden'); 
+            document.getElementById('reportModal').classList.add('flex'); 
+        }
+
+        function closeReportModal() { 
+            document.getElementById('reportModal').classList.add('hidden'); 
+            document.getElementById('reportModal').classList.remove('flex'); 
+        }
+
+        function handleNewReport(e) {
+            e.preventDefault();
+            const newR = {
+                id: reports.length + 1,
+                title: document.getElementById('reportTitle').value,
+                category: document.getElementById('reportCategory').value,
+                description: document.getElementById('reportDesc').value,
+                status: 'Pending',
+                user: currentUser.name,
+                ticket: 'FIX-' + Math.floor(10000 + Math.random() * 90000)
+            };
+            reports.unshift(newR);
+            localStorage.setItem('fixtrack_reports', JSON.stringify(reports));
+            closeReportModal();
+            renderDashboard();
+            alert(`Report submitted successfully! Your Raffle Ticket Code is: ${newR.ticket}`);
+        }
+
+        function triggerRaffleDraw() {
+            const winner = reports[Math.floor(Math.random() * reports.length)];
+            document.getElementById('winnerText').innerHTML = `Winner: <strong class="text-purple-400">${winner.user}</strong><br>Ticket Code: <span class="font-mono bg-purple-950 px-2 py-0.5 rounded text-purple-300">${winner.ticket}</span><br>Associated Issue: ${winner.title}`;
+            document.getElementById('winnerModal').classList.remove('hidden');
+            document.getElementById('winnerModal').classList.add('flex');
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+        }
+
+        function closeWinnerModal() { 
+            document.getElementById('winnerModal').classList.add('hidden'); 
+            document.getElementById('winnerModal').classList.remove('flex'); 
+        }
+
+        // Initialize state on app load
+        window.onload = function() {
+            if (currentUser) {
+                renderDashboard();
+            } else {
+                showHome();
+            }
+        };
+    </script>
+</body>
+</html>
