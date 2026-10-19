@@ -5,6 +5,19 @@
 
 ---
 
+## 🔑 Default Test Credentials
+
+Use the following pre-configured credentials to log into the application and test different access levels:
+
+| Role | Username / Email | Password | Access Level |
+| :--- | :--- | :--- | :--- |
+| **Administrator** | `admin@fixtrack.com` | `Admin123!` | Full admin dashboard access & report management |
+| **Standard User** | `user@fixtrack.com` | `User123!` | Report creation, profile management & ticket tracking |
+
+*(Note: Additional test accounts can be registered directly through the Android app or manually added to the `users` table in `fixtrack_db.sql`.)*
+
+---
+
 ## 🛠️ Tech Stack & Architecture
 * **Mobile Frontend:** Android (Kotlin, Android Studio, Volley Library)
 * **Backend API:** PHP (RESTful architecture)
